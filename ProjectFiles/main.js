@@ -6,10 +6,13 @@ let brickBreak = new Phaser.Game(800, 600, Phaser.CANVAS, '', {
 
 let ball;
 let paddle;
-let brick;
-let gridBrick;
+let innerBricks;
 let brickStyle;
 let brickField;
+let score = 0;
+let textScore;
+let startText;
+let highScore;
 
 function preload() {
     brickBreak.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -32,7 +35,7 @@ function create() {
     brickBreak.physics.enable(ball, Phaser.Physics.ARCADE);
     ball.anchor.set(0.5);
     ball.scale.setTo(0.04, 0.04);
-    ball.body.velocity.set(200, -200);
+    ball.body.velocity.set(300, -300);
     ball.body.collideWorldBounds = true;
     ball.checkWorldBounds = true;
     ball.events.onOutOfBounds.add(gameOver, this);
@@ -45,9 +48,16 @@ function create() {
     paddle.anchor.set(0.5, 1);
     paddle.body.collideWorldBounds = true;
     paddle.body.immovable = true;
-    //
     // let paddleHalf = paddle.width / 2;
-
+    //text stuff
+    textScore = brickBreak.add.text(6, 6, "Score: 0", {
+        font: "18px Geneva",
+        fill: "#FFF"
+    });
+    highScore = brickBreak.add.text(6, 50, "highScore: 0", {
+        font: "18px Geneva",
+        fill: "#FFF"
+    });
     brickMap();
 }
 
@@ -58,40 +68,45 @@ function update() {
 }
 
 
+
+function destroyBrick(ball, innerBricks) {
+    innerBricks.kill();
+    score += 5;
+    textScore.setText(`Score: ${score}`);
+    checkWin();
+}
+
+function checkWin() {
+    if (brickField.countLiving() === 0) {
+        alert("Winner! Winner!");
+        location.reload();
+    }
+}
+
 function gameOver(ball) {
     alert("game over!");
 }
 
-function destroyBrick(ball, gridBrick) {
-  gridBrick.kill();
-}
-
 function brickMap() {
     brickStyle = {
-      padding: 10,
-      width: 30,
-      // height: 25
-      offset: {
-        top: 50,
-        left: 160
-      }
+        padding: 10,
+        width: 30,
+        // height: 25
+        offset: {
+            top: 50,
+            left: 160
+        }
     };
-
     brickField = brickBreak.add.group();
-
-    for (let y = 0; y < 4; y++) {
-        for (let x = 0; x < 12; x++) {
-          let xBrick = (x * (brickStyle.width+brickStyle.padding))+brickStyle.offset.left;
-          let yBrick = (y * (brickStyle.width+brickStyle.padding))+brickStyle.offset.top;
-          gridBrick = brickBreak.add.sprite(xBrick, yBrick, "brick");
-          brickBreak.physics.enable(gridBrick, Phaser.Physics.ARCADE);
-          gridBrick.body.immovable = true;
-          gridBrick.anchor.set(0.5);
-          brickField.add(gridBrick);
-
-
-            // brickField.enableBody = true;
-            // brickField.physicsBodyType = Phaser.physics.ARCADE;
+    for (let y = 0; y < 1; y++) {
+        for (let x = 0; x < 3; x++) {
+            let xBrick = (x * (brickStyle.width + brickStyle.padding)) + brickStyle.offset.left;
+            let yBrick = (y * (brickStyle.width + brickStyle.padding)) + brickStyle.offset.top;
+            innerBricks = brickBreak.add.sprite(xBrick, yBrick, "brick");
+            brickBreak.physics.enable(innerBricks, Phaser.Physics.ARCADE);
+            innerBricks.body.immovable = true;
+            innerBricks.anchor.set(0.5);
+            brickField.add(innerBricks);
         }
     }
 }
