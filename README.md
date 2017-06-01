@@ -7,4 +7,4 @@ and incorporating a third-party API.
 
 You can view the functional site [here]
 
-[here]:www.google.com
+[here]:https://warandoates.github.io/
